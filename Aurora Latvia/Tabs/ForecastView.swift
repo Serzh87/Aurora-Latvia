@@ -9,7 +9,11 @@ import SwiftUI
 
 struct ForecastView: View {
     var body: some View {
-        Text("Forecast")
+        ZStack {
+            Color.background.ignoresSafeArea(.all)
+            
+            Text("Forecast")
+        }
     }
 }
 

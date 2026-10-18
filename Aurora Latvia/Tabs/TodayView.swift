@@ -10,10 +10,11 @@ import WeatherKit
 
 struct TodayView: View {
     var body: some View {
-        Text("Today")
-            .onAppear {
-                getCurrentWeather()
-            }
+        ZStack {
+            Color.background.ignoresSafeArea(.all)
+            
+            Text("Today")
+        }
     }
 
     private func getCurrentWeather() {
@@ -33,5 +34,11 @@ struct TodayView: View {
 }
 
 #Preview {
-    TodayView()
+    TabView {
+        TodayView()
+            .tabItem {
+                Label("Today", systemImage: "square.grid.2x2")
+            }
+    }
+    .tint(.selectedTabItem)
 }

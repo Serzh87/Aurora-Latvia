@@ -9,7 +9,11 @@ import SwiftUI
 
 struct WindView: View {
     var body: some View {
-        Text("Wind")
+        ZStack {
+            Color.background.ignoresSafeArea(.all)
+            
+            Text("Wind")
+        }
     }
 }
 

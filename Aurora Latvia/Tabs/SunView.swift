@@ -9,7 +9,11 @@ import SwiftUI
 
 struct SunView: View {
     var body: some View {
-        Text("Sun")
+        ZStack {
+            Color.background.ignoresSafeArea(.all)
+            
+            Text("Sun")
+        }
     }
 }
 

@@ -46,7 +46,8 @@ struct Aurora_LatviaApp: App {
                         Label("Sun", systemImage: "sun.max")
                     }
             }
-            
+            .tint(.selectedTabItem)
+            .environment(\.colorScheme, .dark)
         }
 //        .modelContainer(sharedModelContainer)
     }
