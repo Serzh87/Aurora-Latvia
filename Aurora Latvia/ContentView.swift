@@ -7,6 +7,7 @@
 
 import SwiftUI
 import SwiftData
+import WeatherKit
 
 struct ContentView: View {
     @Environment(\.modelContext) private var modelContext
@@ -40,10 +41,14 @@ struct ContentView: View {
     }
 
     private func addItem() {
-        withAnimation {
-            let newItem = Item(timestamp: Date())
-            modelContext.insert(newItem)
+        Task {
+            await getCurrentWeather()
         }
+        
+//        withAnimation {
+//            let newItem = Item(timestamp: Date())
+//            modelContext.insert(newItem)
+//        }
     }
 
     private func deleteItems(offsets: IndexSet) {
@@ -51,6 +56,15 @@ struct ContentView: View {
             for index in offsets {
                 modelContext.delete(items[index])
             }
+        }
+    }
+    
+    private func getCurrentWeather() async {
+        do {
+            let currentWeather = try await WeatherService.shared.weather(for: CLLocation(latitude: .init(floatLiteral: 56.9463), longitude: .init(floatLiteral: 24.1051)))
+            print(currentWeather)
+        } catch {
+            print(error)
         }
     }
 }
