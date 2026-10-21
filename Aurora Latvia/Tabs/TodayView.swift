@@ -17,7 +17,7 @@ struct TodayView: View {
         }
     }
 
-    private func getCurrentWeather() {
+    private func getCurrentWeatherAsync() {
         Task {
             await getCurrentWeather()
         }

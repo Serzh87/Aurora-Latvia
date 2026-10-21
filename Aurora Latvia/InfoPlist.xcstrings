@@ -1,0 +1,42 @@
+{
+  "sourceLanguage" : "en",
+  "strings" : {
+    "CFBundleName" : {
+      "comment" : "Bundle name",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Aurora Latvia"
+          }
+        }
+      }
+    },
+    "NSLocationWhenInUseUsageDescription" : {
+      "comment" : "Privacy - Location When In Use Usage Description",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Your location is used to calculate your chance of seeing the northern lights where you are: cloud cover, darkness hours and how high the aurora appears above the horizon."
+          }
+        },
+        "lv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Jūsu atrašanās vieta tiek izmantota, lai aprēķinātu iespēju redzēt ziemeļblāzmu tur, kur atrodaties: mākoņainību, tumsas stundas un to, cik augstu virs horizonta parādās ziemeļblāzma."
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ваше местоположение используется, чтобы рассчитать вероятность увидеть северное сияние там, где вы находитесь: облачность, продолжительность тёмного времени суток и высоту сияния над горизонтом."
+          }
+        }
+      }
+    }
+  },
+  "version" : "1.3"
+}
