@@ -26,7 +26,7 @@ struct Aurora_LatviaApp: App {
     var body: some Scene {
         WindowGroup {
             TabView {
-                TodayView()
+                TodayDetailsView()
                     .tabItem {
                         Label("Today", systemImage: "square.grid.2x2")
                     }

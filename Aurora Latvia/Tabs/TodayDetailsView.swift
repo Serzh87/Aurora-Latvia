@@ -1,5 +1,5 @@
 //
-//  TodayView.swift
+//  TodayDetailsView.swift
 //  Aurora Latvia
 //
 //  Created by Sergey Klus on 18/10/2026.
@@ -8,7 +8,7 @@
 import SwiftUI
 import WeatherKit
 
-struct TodayView: View {
+struct TodayDetailsView: View {
     @State private var kpIndex: KpItem? = KpItem(date: .now, kp: 5.624, observation: .estimated)
     
     private var kpValueColor: Color {
@@ -51,6 +51,10 @@ struct TodayView: View {
                                 Text("Kp \(kpIndex.kp.formatted(.number.precision(.fractionLength(0...2))))")
                                     .font(.system(size: 17, weight: .semibold))
                                     .foregroundStyle(kpValueColor)
+                            } else {
+                                Text("Kp -")
+                                    .font(.system(size: 17, weight: .semibold))
+                                    .foregroundStyle(kpValueColor)
                             }
                         }
                     }
@@ -90,7 +94,7 @@ struct TodayView: View {
 
 #Preview {
     TabView {
-        TodayView()
+        TodayDetailsView()
             .tabItem {
                 Label("Today", systemImage: "square.grid.2x2")
             }
