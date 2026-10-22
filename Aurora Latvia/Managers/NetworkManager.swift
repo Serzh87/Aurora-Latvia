@@ -27,12 +27,14 @@ struct NetworkManager {
     }
 }
 
-struct KpItem {
+struct KpItem: Identifiable {
     enum Observation: String {
         case observed = "observed"
         case estimated = "estimated"
         case predicted = "predicted"
     }
+    
+    let id = UUID()
     
     let date: Date
     let kp: Float
@@ -84,5 +86,22 @@ extension Array where Element == KpItem {
         }
         
         return nil
+    }
+    
+    func getIndexesForCurrentNight() -> [KpItem] {
+        var result: [KpItem] = []
+        
+        let startOfToday = Calendar.current.startOfDay(for: .now)
+        let startDateTime = Calendar.current.date(byAdding: .hour, value: 18, to: startOfToday)!
+        let endDateTime = Calendar.current.date(byAdding: .hour, value: 24 + 6, to: startOfToday)!
+        let startEndDateTimeInterval = (startDateTime...endDateTime)
+        
+        self.forEach {
+            if startEndDateTimeInterval.contains($0.date) {
+                result.append($0)
+            }
+        }
+        
+        return result
     }
 }

@@ -8,7 +8,6 @@
 
 /* Begin PBXFileReference section */
 		293BE6A73084C37D008C2CE6 /* Aurora Latvia.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Aurora Latvia.app"; sourceTree = BUILT_PRODUCTS_DIR; };
-		299730F13088DE5200BDC5E6 /* Riga.gpx */ = {isa = PBXFileReference; lastKnownFileType = text.xml; name = Riga.gpx; path = "Aurora Latvia/Riga.gpx"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
@@ -31,7 +30,6 @@
 		293BE69E3084C37D008C2CE6 = {
 			isa = PBXGroup;
 			children = (
-				299730F13088DE5200BDC5E6 /* Riga.gpx */,
 				293BE6A93084C37D008C2CE6 /* Aurora Latvia */,
 				293BE6A83084C37D008C2CE6 /* Products */,
 			);
