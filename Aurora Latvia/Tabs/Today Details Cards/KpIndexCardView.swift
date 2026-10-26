@@ -12,20 +12,20 @@ struct KpIndexCardView: View {
     var kpIndex: KpItem?
     var tonightKpIndexes: [KpItem]
     
-    private func getKpValueColor(from kp: Float?) -> Color {
+    private func getKpValueColor(from kp: Double?) -> Color {
         guard let kp else {
-            return .mainValueGray
+            return .mainGray
         }
         
         if kp >= 5 {
-            return .mainValueGreen
+            return .mainGreen
         }
         
         if kp >= 4 && kp < 5 {
-            return .mainValueOrange
+            return .mainOrange
         }
         
-        return .mainValueGray
+        return .mainGray
     }
     
     private var kpValueFormatted: String {
@@ -39,15 +39,15 @@ struct KpIndexCardView: View {
         VStack(spacing: 20) {
             HStack(spacing: 10) {
                 Image(systemName: "rays")
-                    .foregroundStyle(Color.kpIndex)
+                    .foregroundStyle(.mainGreen)
                     .frame(width: 30, height: 30)
-                    .background(.kpIndexBackground)
+                    .background(.secondaryGreen)
                     .cornerRadius(12)
                 
                 VStack(alignment: .leading) {
                     Text("Geomagnetic activity")
-                        .font(.system(size: 15))
-                        .foregroundStyle(Color.cardText)
+                        .font(.system(size: 15, weight: .medium))
+                        .foregroundStyle(.cardText)
                     
                     Text("Threshold: 5")
                         .font(.system(size: 12))
@@ -72,19 +72,28 @@ struct KpIndexCardView: View {
                         // NOAA Kp values cover 3-hour windows, so each bar spans its full window
                         // (minus a small gap of 20 minutes) and rises from 0 up to the Kp value.
                         RectangleMark(
-                            xStart: .value("Start", kpItem.date),
-                            xEnd: .value("End", kpItem.date.addingTimeInterval(3 * 3600 - 1200)),
+                            xStart: .value("Start", kpItem.timeTag),
+                            xEnd: .value("End", kpItem.timeTag.addingTimeInterval(3 * 3600 - 1200)),
                             yStart: .value("Base", 0.0),
                             yEnd: .value("Kp Index", kpItem.kp)
                         )
                         .foregroundStyle(getKpValueColor(from: kpItem.kp).gradient)
-                        .cornerRadius(3)
+                        .cornerRadius(4)
                     }
                 }
                 .chartXAxis {
                     AxisMarks {
-                        AxisValueLabel(format: .dateTime.hour())
+                        AxisValueLabel(format: .dateTime.hour(), anchor: .top)
                             .foregroundStyle(.cardTextSecondary)
+                    }
+                }
+                .chartYAxis {
+                    // Explicit marks with a standard anchor; the auto-generated y-axis labels
+                    // otherwise trigger the "Custom UnitPoint values are not supported" warning.
+                    AxisMarks(position: .trailing) {
+                        AxisGridLine()
+                        AxisTick()
+                        AxisValueLabel(anchor: .leading)
                     }
                 }
             }
@@ -92,6 +101,5 @@ struct KpIndexCardView: View {
         .padding()
         .background(.cardBackground)
         .cornerRadius(26)
-        .padding()
     }
 }

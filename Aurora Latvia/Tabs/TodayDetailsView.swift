@@ -18,17 +18,42 @@ struct TodayDetailsView: View {
             ZStack {
                 Color.background.ignoresSafeArea(.all)
                 ScrollView {
-                    KpIndexCardView(kpIndex: kpIndex, tonightKpIndexes: tonightKpIndexes)
+                    VStack(spacing: 12) {
+                        KpIndexCardView(kpIndex: kpIndex, tonightKpIndexes: tonightKpIndexes)
+                            
+                        VStack(spacing: 20) {
+                            HStack(spacing: 10) {
+                                Image(systemName: "wind")
+                                    .foregroundStyle(.mainOrange)
+                                    .frame(width: 30, height: 30)
+                                    .background(.secondaryOrange)
+                                    .cornerRadius(12)
+                                
+                                Text("Solar Wind now")
+                                    .font(.system(size: 15, weight: .medium))
+                                    .foregroundStyle(.cardText)
+                                
+                                Spacer()
+                            }
+                        }
+                        .padding()
+                        .background(.cardBackground)
+                        .cornerRadius(26)
+                    }
+                    .padding()
                 }
             }
             .task {
                 Task {
-                    let result = await NetworkManager.getKp()
-                    kpIndex = result.getCurrentKpIndex()
-                    tonightKpIndexes = result.getIndexesForCurrentNight()
-//                    print(result)
-//                    print(result.getIndexesForCurrentNight())
-//                    print(kpIndex)
+                    let kpResult = await NetworkManager.getKp()
+                    kpIndex = kpResult.getCurrentKpIndex()
+                    tonightKpIndexes = kpResult.getIndexesForCurrentNight()
+                    
+                    let magResult = await NetworkManager.getRtswMagnitude()
+                    print(magResult.filter(\.isActive))
+                    
+                    let windResult = await NetworkManager.getRtswWind()
+                    print(windResult.filter(\.isActive))
                 }
             }
             .navigationBarTitle("Today", displayMode: .large)
