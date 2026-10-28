@@ -14,7 +14,7 @@ struct KpIndexCardView: View {
     
     private func getKpValueColor(from kp: Double?) -> Color {
         guard let kp else {
-            return .mainGray
+            return .cardText
         }
         
         if kp >= 5 {
@@ -25,7 +25,23 @@ struct KpIndexCardView: View {
             return .mainOrange
         }
         
-        return .mainGray
+        return .cardText
+    }
+    
+    private func getKpCahrtValueColor(from kp: Double?) -> Color {
+        guard let kp else {
+            return .barChartGray
+        }
+        
+        if kp >= 5 {
+            return .mainGreen
+        }
+        
+        if kp >= 4 && kp < 5 {
+            return .mainOrange
+        }
+        
+        return .barChartGray
     }
     
     private var kpValueFormatted: String {
@@ -57,7 +73,7 @@ struct KpIndexCardView: View {
                 Spacer()
                 
                 Text("Kp \(kpValueFormatted)")
-                    .font(.system(size: 18, weight: .bold))
+                    .font(.system(size: 17, weight: .semibold))
                     .foregroundStyle(getKpValueColor(from: kpIndex?.kp))
             }
             
@@ -77,7 +93,7 @@ struct KpIndexCardView: View {
                             yStart: .value("Base", 0.0),
                             yEnd: .value("Kp Index", kpItem.kp)
                         )
-                        .foregroundStyle(getKpValueColor(from: kpItem.kp).gradient)
+                        .foregroundStyle(getKpCahrtValueColor(from: kpItem.kp))
                         .cornerRadius(4)
                     }
                 }
@@ -99,7 +115,6 @@ struct KpIndexCardView: View {
             }
         }
         .padding()
-        .background(.cardBackground)
-        .cornerRadius(26)
+        .background(.cardBackground, in: .rect(corners: .concentric(minimum: .fixed(24))))
     }
 }
