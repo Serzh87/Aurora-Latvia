@@ -48,7 +48,7 @@ struct KpIndexCardView: View {
         guard let kpValue = kpIndex?.kp else {
             return "-"
         }
-        return "\(kpValue.formatted(.number.precision(.fractionLength(0...2))))"
+        return kpValue.formatted(.number.precision(.fractionLength(0...2)))
     }
     
     var body: some View {

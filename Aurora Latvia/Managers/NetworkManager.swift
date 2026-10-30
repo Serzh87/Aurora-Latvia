@@ -43,7 +43,7 @@ struct NetworkManager {
     }
 }
 
-// MARK: - KpItem
+// MARK: - RTSW Wind
 struct RTSWWind: Identifiable {
     let id = UUID()
     let timeTag: Date
@@ -73,7 +73,63 @@ extension RTSWWind: Decodable {
     }
 }
 
-// MARK: - KpItem
+struct CurrentRTSWWindSpped {
+    let speed: Double
+    let density: Double
+    let windTone: WindTone
+    
+    init?(speed: Double?, density: Double?) {
+        guard let speed, let density else {
+            return nil
+        }
+        
+        self.density = density
+        self.speed = speed
+        switch speed {
+        case _ where speed < 400:
+            windTone = .quiet
+        case _ where speed <= 500:
+            windTone = .watch
+        case _ where speed <= 700:
+            windTone = .good
+        default:
+            windTone = .strong
+        }
+    }
+    
+    var info: String {
+        switch windTone {
+        case .quiet:
+            "slow - below 400"
+        case .watch:
+            "moderate - 400 - 500"
+        case .good:
+            "fast - above 500"
+        case .strong:
+            "very fast - 700+"
+        }
+    }
+}
+
+extension Array where Element == RTSWWind {
+    func getCurrentSpeedAndDensity() -> CurrentRTSWWindSpped? {
+        let active = filter(\.isActive)
+        
+        guard let fromTimeTag = active.first?.timeTag.addingTimeInterval(-10 * 60) else {
+            return nil
+        }
+        
+        let lastMinutesItems = active.filter {
+            $0.timeTag >= fromTimeTag
+        }
+        
+        let meanSpeed = lastMinutesItems.compactMap(\.protonSpeed).median
+        let meanDensity = lastMinutesItems.compactMap(\.protonDensity).median
+        return CurrentRTSWWindSpped(speed: meanSpeed, density: meanDensity)
+    }
+}
+
+// MARK: - RTSW Magnitude
 struct RTSWMag: Identifiable {
     let id = UUID()
     let timeTag: Date
@@ -100,6 +156,59 @@ extension RTSWMag: Decodable {
         source = try values.decode(String.self, forKey: .source)
         bt = try values.decodeIfPresent(Double.self, forKey: .bt)
         bzGsm = try values.decodeIfPresent(Double.self, forKey: .bz_gsm)
+    }
+}
+
+struct CurrentRTSWWindMagnitude {
+    let bz: Double
+    let windTone: WindTone
+    
+    init?(bz: Double?) {
+        guard let bz else {
+            return nil
+        }
+        
+        self.bz = bz
+        switch bz {
+        case _ where bz > 0:
+            windTone = .quiet
+        case _ where bz > -5:
+            windTone = .watch
+        case _ where bz > -10:
+            windTone = .good
+        default:
+            windTone = .strong
+        }
+    }
+    
+    var info: String {
+        switch windTone {
+        case .quiet:
+            "northward — no aurora"
+        case .watch:
+            "southward — chance is rising"
+        case .good:
+            "southward — good"
+        case .strong:
+            "strong south — look up!"
+        }
+    }
+}
+
+extension Array where Element == RTSWMag {
+    func getCurrentMagnitude() -> CurrentRTSWWindMagnitude? {
+        let active = filter(\.isActive)
+        
+        guard let fromTimeTag = active.first?.timeTag.addingTimeInterval(-10 * 60) else {
+            return nil
+        }
+        
+        let lastMinutesItems = active.filter {
+            $0.timeTag >= fromTimeTag
+        }
+        
+        let medianBz = lastMinutesItems.compactMap(\.bzGsm).median
+        return CurrentRTSWWindMagnitude(bz: medianBz)
     }
 }
 

@@ -6,8 +6,6 @@
 import Foundation
 
 extension Collection where Element: BinaryFloatingPoint {
-    /// Middle value of the sorted collection, or the average of the two middle values
-    /// when the count is even. Returns `nil` for an empty collection.
     var median: Element? {
         guard !isEmpty else { return nil }
         let sorted = self.sorted()
@@ -17,12 +15,8 @@ extension Collection where Element: BinaryFloatingPoint {
         }
         return sorted[middle]
     }
-}
-
-extension Collection where Element: BinaryInteger {
-    /// Median as `Double`, since the average of two middle integers can be fractional.
-    /// Returns `nil` for an empty collection.
-    var median: Double? {
-        map(Double.init).median
+    
+    var mean: Element? {
+        isEmpty ? nil : reduce(0, +) / Element(count)
     }
 }

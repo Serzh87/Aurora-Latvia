@@ -12,6 +12,9 @@ import Charts
 struct TodayDetailsView: View {
     @State private var kpIndex: KpItem? = nil
     @State private var tonightKpIndexes: [KpItem] = []
+    @State private var currentWindMagnitude: CurrentRTSWWindMagnitude?
+    @State private var currentWindSpeed: CurrentRTSWWindSpped?
+    @State private var isLoading = false
     
     var body: some View {
         NavigationStack {
@@ -40,56 +43,68 @@ struct TodayDetailsView: View {
                                     Text("Bz")
                                         .font(.system(size: 12))
                                     
-                                    HStack(alignment: .firstTextBaseline, spacing: 4) {
-                                        Text("-8").font(.system(size: 28, weight: .bold))
+                                    if let currentWindMagnitude {
+                                        HStack(alignment: .firstTextBaseline, spacing: 4) {
+                                            Text(currentWindMagnitude.bz.formatted(.number.precision(.fractionLength(0...1)))).font(.system(size: 28, weight: .bold))
+                                                .foregroundStyle(currentWindMagnitude.windTone.valueColor)
+                                            Text("nT").font(.system(size: 14, weight: .semibold))
+                                        }
+                                        
+                                        Text(currentWindMagnitude.info)
+                                            .font(.system(size: 12))
+                                    } else {
+                                        Text("-").font(.system(size: 28, weight: .bold))
                                             .foregroundStyle(.mainGray)
-                                        Text("nT").font(.system(size: 14, weight: .semibold))
                                     }
-                                    
-                                    Text("южный — хорошо")
-                                        .font(.system(size: 12))
                                 }
                                 .padding(.horizontal, 12)
                                 .padding(.vertical, 10)
                                 .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .leading)
-                                .background(.secondaryGray, in: .rect(corners: .concentric(minimum: .fixed(12))))
-                                .foregroundStyle(.mainGrayLight)
+                                .background(currentWindMagnitude?.windTone.backgroundColor ?? .secondaryGray, in: .rect(corners: .concentric(minimum: .fixed(12))))
+                                .foregroundStyle(currentWindMagnitude?.windTone.textColor ?? .mainGrayLight)
                                 
                                 VStack(alignment: .leading, spacing: 2) {
                                     Text("Speed")
                                         .font(.system(size: 12))
                                     
-                                    HStack(alignment: .firstTextBaseline, spacing: 4) {
-                                        Text("520").font(.system(size: 28, weight: .bold))
-                                            .foregroundStyle(.mainOrange)
-                                        Text("km/s").font(.system(size: 14, weight: .semibold))
+                                    if let currentWindSpeed {
+                                        HStack(alignment: .firstTextBaseline, spacing: 4) {
+                                            Text(currentWindSpeed.speed.formatted(.number.precision(.fractionLength(0)))).font(.system(size: 28, weight: .bold))
+                                                .foregroundStyle(currentWindSpeed.windTone.valueColor)
+                                            Text("km/s").font(.system(size: 14, weight: .semibold))
+                                        }
+                                        
+                                        Text(currentWindSpeed.info)
+                                            .font(.system(size: 12))
+                                    } else {
+                                        Text("-").font(.system(size: 28, weight: .bold))
+                                            .foregroundStyle(.mainGray)
                                     }
-                                    
-                                    Text("быстрый — выше 500")
-                                        .font(.system(size: 12))
                                 }
                                 .padding(.horizontal, 12)
                                 .padding(.vertical, 10)
                                 .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .leading)
-                                .background(.secondaryOrange, in: .rect(corners: .concentric(minimum: .fixed(12))))
-                                .foregroundStyle(.mainOrangeLight)
+                                .background(currentWindSpeed?.windTone.backgroundColor ?? .secondaryGray, in: .rect(corners: .concentric(minimum: .fixed(12))))
+                                .foregroundStyle(currentWindSpeed?.windTone.textColor ?? .mainGrayLight)
                             }
                             .fixedSize(horizontal: false, vertical: true)
                             
-                            HStack {
-                                Image(systemName: "bolt")
-                                    .font(.system(size: 14))
-                                    .foregroundStyle(.bolt)
-                                    .frame(width: 16, height: 16)
-                                
-                                Text("Dense flow \(18) p/cm³ - aurora may be brighter")
-                                    .font(.system(size: 14))
-                                    .foregroundStyle(.secondaryCardText)
+                            if let density = currentWindSpeed?.density, density >= 15 {
+                                HStack {
+                                    Image(systemName: "bolt")
+                                        .font(.system(size: 14))
+                                        .foregroundStyle(.bolt)
+                                        .frame(width: 16, height: 16)
+                                    
+                                    Text("Dense flow \(density.formatted(.number.precision(.fractionLength(0...1)))) p/cm³ - aurora may be brighter")
+                                        .font(.system(size: 14))
+                                        .foregroundStyle(.secondaryCardText)
+                                }
+                                .frame(maxWidth: .infinity, alignment: .leading)
+                                .padding(.horizontal, 12)
+                                .padding(.vertical, 10)
+                                .background(.secondaryCardBackground, in: .rect(corners: .concentric(minimum: .fixed(12))))
                             }
-                            .frame(maxWidth: .infinity, alignment: .leading)
-                            .padding(.horizontal, 12)
-                            .padding(.vertical, 10)
-                            .background(.secondaryCardBackground, in: .rect(corners: .concentric(minimum: .fixed(12))))
                         }
                         .padding()
                         .background(.cardBackground, in: .rect(corners: .concentric(minimum: .fixed(24))))
@@ -99,19 +114,40 @@ struct TodayDetailsView: View {
             }
             .task {
                 Task {
-                    let kpResult = await NetworkManager.getKp()
-                    kpIndex = kpResult.getCurrentKpIndex()
-                    tonightKpIndexes = kpResult.getIndexesForCurrentNight()
-//                    
-//                    let magResult = await NetworkManager.getRtswMagnitude()
-//                    print(magResult.filter(\.isActive))
-//                    
-//                    let windResult = await NetworkManager.getRtswWind()
-//                    print(windResult.filter(\.isActive))
+                    await reloadData()
                 }
             }
-            .navigationBarTitle("Today", displayMode: .large)
+            .navigationBarTitle("Today")
+            .toolbar {
+                ToolbarItem {
+                    if isLoading {
+                        ProgressView()
+                    } else {
+                        Button("Refresh", systemImage: "arrow.trianglehead.clockwise.rotate.90") {
+                            Task {
+                                await reloadData()
+                            }
+                        }
+                    }
+                }
+            }
         }
+    }
+    
+    private func reloadData() async {
+        guard !isLoading else { return }
+        isLoading = true
+        defer { isLoading = false }
+
+        let kpResult = await NetworkManager.getKp()
+        kpIndex = kpResult.getCurrentKpIndex()
+        tonightKpIndexes = kpResult.getIndexesForCurrentNight()
+        
+        let magResult = await NetworkManager.getRtswMagnitude()
+        currentWindMagnitude = magResult.getCurrentMagnitude()
+        
+        let windResult = await NetworkManager.getRtswWind()
+        currentWindSpeed = windResult.getCurrentSpeedAndDensity()
     }
 
     private func getCurrentWeatherAsync() {
@@ -126,43 +162,6 @@ struct TodayDetailsView: View {
             print(currentWeather)
         } catch {
             print(error)
-        }
-    }
-}
-
-enum WindTone { case quiet, watch, good }
-
-extension WindTone {
-    var backgroundColor: Color {
-        switch self {
-        case .quiet:
-            .secondaryGray
-        case .watch:
-            .secondaryOrange
-        case .good:
-            .secondaryGreen
-        }
-    }
-    
-    var valueColor: Color {
-        switch self {
-        case .quiet:
-            .mainGray
-        case .watch:
-            .mainOrange
-        case .good:
-            .mainGreen
-        }
-    }
-    
-    var textColor: Color {
-        switch self {
-        case .quiet:
-            .mainGrayLight
-        case .watch:
-            .mainOrangeLight
-        case .good:
-            .mainGreenLight
         }
     }
 }
