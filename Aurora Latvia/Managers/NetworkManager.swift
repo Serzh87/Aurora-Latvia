@@ -184,13 +184,13 @@ struct CurrentRTSWWindMagnitude {
     var info: String {
         switch windTone {
         case .quiet:
-            "northward — no aurora"
+            "northward - no aurora"
         case .watch:
-            "southward — chance is rising"
+            "southward - chance is rising"
         case .good:
-            "southward — good"
+            "southward - good"
         case .strong:
-            "strong south — look up!"
+            "strong south - look up!"
         }
     }
 }
