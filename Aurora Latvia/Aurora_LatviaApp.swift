@@ -25,8 +25,29 @@ struct Aurora_LatviaApp: App {
 
     var body: some Scene {
         WindowGroup {
-            ContentView()
+            TabView {
+                TodayDetailsView()
+                    .tabItem {
+                        Label("Today", systemImage: "square.grid.2x2")
+                    }
+                
+                ForecastView()
+                    .tabItem {
+                        Label("Forecast", systemImage: "chart.bar.xaxis")
+                    }
+                
+                WindView()
+                    .tabItem {
+                        Label("Wind", systemImage: "wind")
+                    }
+                
+                SunView()
+                    .tabItem {
+                        Label("Sun", systemImage: "sun.max")
+                    }
+            }
+//            .tint(.selectedTabItem)
         }
-        .modelContainer(sharedModelContainer)
+//        .modelContainer(sharedModelContainer)
     }
 }
