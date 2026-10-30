@@ -78,15 +78,15 @@ struct TodayDetailsView: View {
                             
                             HStack {
                                 Image(systemName: "bolt")
+                                    .font(.system(size: 14))
                                     .foregroundStyle(.bolt)
                                     .frame(width: 16, height: 16)
                                 
                                 Text("Dense flow \(18) p/cm³ - aurora may be brighter")
-                                    .font(.system(size: 13))
+                                    .font(.system(size: 14))
                                     .foregroundStyle(.secondaryCardText)
-                                
-                                Spacer()
                             }
+                            .frame(maxWidth: .infinity, alignment: .leading)
                             .padding(.horizontal, 12)
                             .padding(.vertical, 10)
                             .background(.secondaryCardBackground, in: .rect(corners: .concentric(minimum: .fixed(12))))
@@ -131,6 +131,41 @@ struct TodayDetailsView: View {
 }
 
 enum WindTone { case quiet, watch, good }
+
+extension WindTone {
+    var backgroundColor: Color {
+        switch self {
+        case .quiet:
+            .secondaryGray
+        case .watch:
+            .secondaryOrange
+        case .good:
+            .secondaryGreen
+        }
+    }
+    
+    var valueColor: Color {
+        switch self {
+        case .quiet:
+            .mainGray
+        case .watch:
+            .mainOrange
+        case .good:
+            .mainGreen
+        }
+    }
+    
+    var textColor: Color {
+        switch self {
+        case .quiet:
+            .mainGrayLight
+        case .watch:
+            .mainOrangeLight
+        case .good:
+            .mainGreenLight
+        }
+    }
+}
 
 #Preview {
     TabView {
