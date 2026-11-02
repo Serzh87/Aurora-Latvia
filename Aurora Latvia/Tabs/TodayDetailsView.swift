@@ -10,6 +10,8 @@ import WeatherKit
 import Charts
 
 struct TodayDetailsView: View {
+    @State private var locationManager = LocationManager()
+    
     @State private var kpIndex: KpItem? = nil
     @State private var tonightKpIndexes: [KpItem] = []
     @State private var currentWindMagnitude: CurrentRTSWWindMagnitude?
@@ -34,6 +36,11 @@ struct TodayDetailsView: View {
                     await reloadData()
                 }
             }
+            // Re-runs every time LocationManager publishes a new location.
+            .task(id: locationManager.location) {
+                guard let location = locationManager.location else { return }
+                await getCurrentWeather(for: location)
+            }
             .navigationBarTitle("Today")
             .toolbar {
                 ToolbarItem {
@@ -56,26 +63,23 @@ struct TodayDetailsView: View {
         isLoading = true
         defer { isLoading = false }
 
-        let kpResult = await NetworkManager.getKp()
-        kpIndex = kpResult.getCurrentKpIndex()
-        tonightKpIndexes = kpResult.getIndexesForCurrentNight()
+        // Weather is loaded by .task(id:) once the new location arrives.
+        locationManager.requestLocation()
         
-        let magResult = await NetworkManager.getRtswMagnitude()
-        currentWindMagnitude = magResult.getCurrentMagnitude()
-        
-        let windResult = await NetworkManager.getRtswWind()
-        currentWindSpeed = windResult.getCurrentSpeedAndDensity()
+//        let kpResult = await NetworkManager.getKp()
+//        kpIndex = kpResult.getCurrentKpIndex()
+//        tonightKpIndexes = kpResult.getIndexesForCurrentNight()
+//        
+//        let magResult = await NetworkManager.getRtswMagnitude()
+//        currentWindMagnitude = magResult.getCurrentMagnitude()
+//        
+//        let windResult = await NetworkManager.getRtswWind()
+//        currentWindSpeed = windResult.getCurrentSpeedAndDensity()
     }
 
-    private func getCurrentWeatherAsync() {
-        Task {
-            await getCurrentWeather()
-        }
-    }
-    
-    private func getCurrentWeather() async {
+    private func getCurrentWeather(for location: CLLocation) async {
         do {
-            let currentWeather = try await WeatherService.shared.weather(for: CLLocation(latitude: .init(floatLiteral: 56.9463), longitude: .init(floatLiteral: 24.1051)))
+            let currentWeather = try await WeatherService.shared.weather(for: location)
             print(currentWeather)
         } catch {
             print(error)
