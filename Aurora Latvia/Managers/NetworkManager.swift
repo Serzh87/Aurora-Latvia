@@ -272,7 +272,7 @@ extension Array where Element == KpItem {
         let endDateTime = Calendar.current.date(byAdding: .hour, value: 24 + 6, to: startOfToday)!
         let startEndDateTimeInterval = (startDateTime...endDateTime)
         
-        self.forEach {
+        forEach {
             if startEndDateTimeInterval.contains($0.timeTag) {
                 result.append($0)
             }

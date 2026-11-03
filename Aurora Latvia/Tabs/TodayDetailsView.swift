@@ -11,7 +11,9 @@ import Charts
 
 struct TodayDetailsView: View {
     @State private var locationManager = LocationManager()
+    @State private var weatherManager = WeatherManager()
     
+    @State private var tonightCloudCover: [CloudCover] = []
     @State private var kpIndex: KpItem? = nil
     @State private var tonightKpIndexes: [KpItem] = []
     @State private var currentWindMagnitude: CurrentRTSWWindMagnitude?
@@ -38,16 +40,56 @@ struct TodayDetailsView: View {
                                         .font(.system(size: 15, weight: .medium))
                                         .foregroundStyle(.cardText)
                                     
-                                    Text("Threshold: 5")
+                                    Text(weatherManager.currentWeather?.currentWeather.condition.description ?? "-")
                                         .font(.system(size: 12))
                                         .foregroundStyle(.cardTextSecondary)
                                 }
                                 
                                 Spacer()
                                 
-                                Text("10%")
-                                    .font(.system(size: 17, weight: .semibold))
-                                    .foregroundStyle(.cardText)
+                                if let currentWeather = weatherManager.currentWeather {
+                                    Text(currentWeather.currentWeather.cloudCover.formatted(.percent))
+                                        .font(.system(size: 17, weight: .semibold))
+                                        .foregroundStyle(.cardText)
+                                } else {
+                                    Text("-")
+                                        .font(.system(size: 17, weight: .semibold))
+                                        .foregroundStyle(.cardText)
+                                }
+                            }
+                            
+                            if !tonightCloudCover.isEmpty {
+                                Chart() {
+                                    ForEach(tonightCloudCover) { cloud in
+                                        AreaMark(
+                                            x: .value("Day", cloud.date, unit: .hour),
+                                            yStart: .value("Value", cloud.cover),
+                                            yEnd: .value("Min Value", 0)
+                                        )
+                                        .foregroundStyle(Gradient(colors: [.indigo.opacity(0.7), .indigo.opacity(0.3)]))
+                                        .interpolationMethod(.monotone)
+                                        
+                                        LineMark(
+                                            x: .value("Day", cloud.date, unit: .hour),
+                                            y: .value("Value", cloud.cover)
+                                        )
+                                        .foregroundStyle(.indigo)
+                                        .interpolationMethod(.monotone)
+                                    }
+                                }
+                                .chartXAxis {
+                                    AxisMarks {
+                                        AxisValueLabel(format: .dateTime.hour())
+                                    }
+                                }
+                                .chartYAxis {
+                                    AxisMarks { value in
+                                        AxisGridLine()
+                                            .foregroundStyle(Color.secondary.opacity(0.3))
+                                        
+                                        AxisValueLabel((value.as(Double.self) ?? 0).formatted(.percent))
+                                    }
+                                }
                             }
                         }
                         .padding()
@@ -66,7 +108,8 @@ struct TodayDetailsView: View {
             // Re-runs every time LocationManager publishes a new location.
             .task(id: locationManager.location) {
                 guard let location = locationManager.location else { return }
-                await getCurrentWeather(for: location)
+                await weatherManager.getCurrentWeather(for: location)
+                tonightCloudCover = weatherManager.getTonightCloudCover()
             }
             .navigationBarTitle("Today")
             .toolbar {
@@ -102,15 +145,6 @@ struct TodayDetailsView: View {
 //        
 //        let windResult = await NetworkManager.getRtswWind()
 //        currentWindSpeed = windResult.getCurrentSpeedAndDensity()
-    }
-
-    private func getCurrentWeather(for location: CLLocation) async {
-        do {
-            let currentWeather = try await WeatherService.shared.weather(for: location)
-            print(currentWeather)
-        } catch {
-            print(error)
-        }
     }
 }
 
