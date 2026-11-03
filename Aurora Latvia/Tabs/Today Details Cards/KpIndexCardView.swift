@@ -79,7 +79,7 @@ struct KpIndexCardView: View {
             if !tonightKpIndexes.isEmpty {
                 Chart {
                     RuleMark(y: .value("Threshold", 5))
-                        .foregroundStyle(.cardTextSecondary)
+                        .foregroundStyle(.cardTextSecondary.opacity(0.7))
                         .lineStyle(.init(lineWidth: 1, dash: [5]))
                         .accessibilityHidden(true)
                     
@@ -107,8 +107,10 @@ struct KpIndexCardView: View {
                     // otherwise trigger the "Custom UnitPoint values are not supported" warning.
                     AxisMarks(position: .trailing) {
                         AxisGridLine()
+                            .foregroundStyle(.cardTextSecondary.opacity(0.3))
                         AxisTick()
                         AxisValueLabel(anchor: .leading)
+                            .foregroundStyle(.cardTextSecondary)
                     }
                 }
             }

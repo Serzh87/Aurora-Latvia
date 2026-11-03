@@ -28,7 +28,7 @@ final class WeatherManager {
         
         let startOfToday = Calendar.current.startOfDay(for: .now)
         let startDateTime = Calendar.current.date(byAdding: .hour, value: 17, to: startOfToday)!
-        let endDateTime = Calendar.current.date(byAdding: .hour, value: 24 + 6, to: startOfToday)!
+        let endDateTime = Calendar.current.date(byAdding: .hour, value: 24 + 7, to: startOfToday)!
         let startEndDateTimeInterval = (startDateTime...endDateTime)
         
         var result: [CloudCover] = []

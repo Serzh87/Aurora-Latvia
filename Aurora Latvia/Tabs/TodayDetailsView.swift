@@ -62,32 +62,33 @@ struct TodayDetailsView: View {
                                 Chart() {
                                     ForEach(tonightCloudCover) { cloud in
                                         AreaMark(
-                                            x: .value("Day", cloud.date, unit: .hour),
-                                            yStart: .value("Value", cloud.cover),
-                                            yEnd: .value("Min Value", 0)
+                                            x: .value("Hour", cloud.date),
+                                            y: .value("Cover", cloud.cover)
                                         )
-                                        .foregroundStyle(Gradient(colors: [.indigo.opacity(0.7), .indigo.opacity(0.3)]))
+                                        .foregroundStyle(Gradient(colors: [.cloudCover.opacity(0.8), .cloudCover.opacity(0.3)]))
                                         .interpolationMethod(.monotone)
                                         
                                         LineMark(
-                                            x: .value("Day", cloud.date, unit: .hour),
-                                            y: .value("Value", cloud.cover)
+                                            x: .value("Hour", cloud.date),
+                                            y: .value("Cover", cloud.cover)
                                         )
-                                        .foregroundStyle(.indigo)
+                                        .foregroundStyle(.cloudCover)
                                         .interpolationMethod(.monotone)
                                     }
                                 }
                                 .chartXAxis {
                                     AxisMarks {
                                         AxisValueLabel(format: .dateTime.hour())
+                                            .foregroundStyle(.cardTextSecondary)
                                     }
                                 }
                                 .chartYAxis {
                                     AxisMarks { value in
                                         AxisGridLine()
-                                            .foregroundStyle(Color.secondary.opacity(0.3))
+                                            .foregroundStyle(.cardTextSecondary.opacity(0.3))
                                         
                                         AxisValueLabel((value.as(Double.self) ?? 0).formatted(.percent))
+                                            .foregroundStyle(.cardTextSecondary)
                                     }
                                 }
                             }
@@ -136,15 +137,15 @@ struct TodayDetailsView: View {
         // Weather is loaded by .task(id:) once the new location arrives.
         locationManager.requestLocation()
         
-//        let kpResult = await NetworkManager.getKp()
-//        kpIndex = kpResult.getCurrentKpIndex()
-//        tonightKpIndexes = kpResult.getIndexesForCurrentNight()
-//        
-//        let magResult = await NetworkManager.getRtswMagnitude()
-//        currentWindMagnitude = magResult.getCurrentMagnitude()
-//        
-//        let windResult = await NetworkManager.getRtswWind()
-//        currentWindSpeed = windResult.getCurrentSpeedAndDensity()
+        let kpResult = await NetworkManager.getKp()
+        kpIndex = kpResult.getCurrentKpIndex()
+        tonightKpIndexes = kpResult.getIndexesForCurrentNight()
+        
+        let magResult = await NetworkManager.getRtswMagnitude()
+        currentWindMagnitude = magResult.getCurrentMagnitude()
+        
+        let windResult = await NetworkManager.getRtswWind()
+        currentWindSpeed = windResult.getCurrentSpeedAndDensity()
     }
 }
 
