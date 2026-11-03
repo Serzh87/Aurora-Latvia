@@ -17,7 +17,7 @@ struct SolarWindCardView: View {
                 Image(systemName: "wind")
                     .foregroundStyle(.mainOrange)
                     .frame(width: 30, height: 30)
-                    .background(.secondaryOrange, in: .rect(cornerRadius: 12))
+                    .background(.secondaryOrange, in: .rect(corners: .concentric(minimum: .fixed(10))))
                 
                 Text("Solar Wind now")
                     .font(.system(size: 15, weight: .medium))

@@ -57,8 +57,7 @@ struct KpIndexCardView: View {
                 Image(systemName: "rays")
                     .foregroundStyle(.mainGreen)
                     .frame(width: 30, height: 30)
-                    .background(.secondaryGreen)
-                    .cornerRadius(12)
+                    .background(.secondaryGreen, in: .rect(corners: .concentric(minimum: .fixed(10))))
                 
                 VStack(alignment: .leading) {
                     Text("Geomagnetic activity")
